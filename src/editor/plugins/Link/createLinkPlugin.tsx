@@ -6,9 +6,9 @@ import {
 
 import { getLinkDeserialize } from './getLinkDeserialize';
 import { CUSTOM_ELEMENT_LINK } from './types';
-import { getToggleElementOnKeyDown, withLink } from '@udecode/plate';
+import { getToggleElementOnKeyDown } from '@udecode/plate';
 import { getCustomElementRenderer } from '../renderers/getCustomElementRenderer';
-// import { withLink } from './withLink';
+import { withLink } from './withLink';
 
 /**
  * Enables support for images.

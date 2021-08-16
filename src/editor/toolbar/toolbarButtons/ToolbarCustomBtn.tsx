@@ -14,6 +14,7 @@ const ToolbarCustomBtn = ({
             if(e.button === 0){
             e.preventDefault();
             toggleBlock(editor, type);
+            editor?.deleteBackward("character");
             }
           }}
           {...props}

@@ -46,7 +46,7 @@ import {
 import { BaseRange, Editor, Range, Location, BaseSelection } from "slate";
 import "./editor.css";
 import { useEffect, useRef, useState } from 'react';
-import { EditorWrapper } from "./EditorIndex.style"
+import { EditorWrapper, SlashToolbarWrapper } from "./EditorIndex.style"
 import { createImageOptionPlugin } from "./plugins/ImageOption/createImageOptionPlugin";
 import BallonToolbar from "./toolbar/BallonToolbar";
 import HeaderToolbar from './toolbar/HeaderToolbar';
@@ -57,6 +57,7 @@ import { optionsAutoformat } from './config/AutoFormatRules';
 import { CustomParagraphElement } from './plugins/Paragraph/ParagraphElement';
 import { insertLink } from './plugins/utils';
 import { Transforms } from 'slate';
+import SlashToolbar from './toolbar/SlashToolbar';
 
 
 // All Plguins
@@ -103,6 +104,12 @@ const EditorIndex = () => {
 
     const [value, setValue] = useState<string | null>(null);
     const editor = useStoreEditorRef(useEventEditorId('focus'));
+
+    // @ and / Toolbar Necessary Things
+    const slashToolbarRef:any = useRef();
+    const [target, setTarget] = useState<any>("");
+    const [defaultToolbarTarget, setDefaultToolbarTarget] = useState<any>("");
+    const [index, setIndex] = useState<number>(0);
 
     // Link Form Necessary Things
     const ref:any = useRef();
@@ -215,9 +222,55 @@ const EditorIndex = () => {
     const onChangeValue = (newValue: any) => {      
         setValue(`value ${JSON.stringify(newValue)}`);
         toggleBallonToolbar();
-        console.log(editor?.selection);
+        if(!editor) return;
+        const { selection } = editor;
+        if (selection && Range.isCollapsed(selection)) {
+          const [start] = Range.edges(selection);
+          let chBefore = "";
+          let target = {anchor: start, focus: start}
+
+          if(start.offset === 1) {
+            target = { anchor: {...start, offset: 0}, focus: start};
+          } else if(start.offset > 1) {
+            target = { anchor: {...start, offset: start.offset - 2}, focus: start};
+          }
+
+          chBefore = Editor.string(editor, target)
+          console.log(`chBefore`, chBefore, chBefore.length);
+
+          if(chBefore === '@' || chBefore === ' @') {
+            console.log('%c@', "color: red; font-size: 50px;");
+            setTarget(target);
+            setIndex(0);
+            return;
+          }
+
+          if(chBefore === '/' || chBefore === ' /') {
+            console.log('%c/', "color: red; font-size: 50px;");
+            setDefaultToolbarTarget(target);
+            return
+          }
+
+          setTarget(null);
+          setDefaultToolbarTarget(null);
+        }
         
     }
+
+    // Slash Toolbar Toggler
+    useEffect(() => {
+      if (defaultToolbarTarget) {
+        const EditorLeft:any = document.getElementById("editor-wrapper");
+        const el: any = slashToolbarRef.current;
+        if(!editor) return
+        const domRange = ReactEditor.toDOMRange(editor, defaultToolbarTarget);
+        const rect = domRange.getBoundingClientRect();
+        console.log(rect);
+        el.style.opacity = "1";
+        el.style.top = `${rect.top + + window.pageYOffset + rect.height + 5}px`;
+        el.style.left = `${rect?.left}px`;
+      }
+    }, [editor, defaultToolbarTarget]);
 
 
     const components = createPlateComponents({
@@ -240,6 +293,11 @@ const EditorIndex = () => {
                   onLinkFormSubmit={onLinkFormSubmit}
                 />
             </TBallonToolbar>
+            {defaultToolbarTarget &&
+              <SlashToolbarWrapper ref={slashToolbarRef}>
+                <SlashToolbar />
+              </SlashToolbarWrapper>
+            }
             <Plate editableProps={editableProps} plugins={plugins} components={components}
                 options={options} onChange={onChangeValue} initialValue={initialValue}
             >

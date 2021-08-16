@@ -1,4 +1,4 @@
-import { someNode } from "@udecode/plate";
+import { isUrl, someNode } from "@udecode/plate";
 import { Editor, Transforms, Range } from "slate";
 import { CUSTOM_ELEMENT_LINK } from "./Link/types";
 
@@ -39,6 +39,26 @@ export const validURL = (str: string) => {
     if (isLinkActive(editor)) {
       unwrapLink(editor);
     }
+
+    editor.isInline = (element: any) => element.type === CUSTOM_ELEMENT_LINK;
+
+    // editor.insertText = (text:any) => {
+    //   if (text && isUrl(text)) {
+    //     wrapLink(editor, text)
+    //   } else {
+    //     editor.insertText(text)
+    //   }
+    // }
+  
+    // editor.insertData = (data:any) => {
+    //   const text = data.getData('text/plain')
+  
+    //   if (text && isUrl(text)) {
+    //     wrapLink(editor, text)
+    //   } else {
+    //     editor.insertData(data)
+    //   }
+    // }
   
     const { selection } = editor;
     const isCollapsed = selection && Range.isCollapsed(selection);

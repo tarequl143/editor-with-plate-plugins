@@ -7,8 +7,9 @@ export const TBallonToolbar = styled.div`
     z-index: 99999;
     opacity: 0;
     background-color: #ffffff;
-    box-shadow: 0px 2px 10px #d4d4d4;
-    border-radius: 2px;
+    box-shadow: 0px 10px 30px rgba(56, 63, 69, 0.14);
+    border: 1px solid rgba(56, 63, 69, 0.1);
+    border-radius: 4px;
     transition: opacity 0.75s ease 0s;
     box-sizing: border-box;
     width: max-content;
@@ -41,5 +42,8 @@ export const TBallonToolbarContent = styled.div`
     }
     .slate-ToolbarButton-active {
         color: #98e17d;
+        .icon {
+            color: #98e17d;
+        }
     }
 `

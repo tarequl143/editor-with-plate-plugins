@@ -1,6 +1,7 @@
 import { ELEMENT_BLOCKQUOTE, ELEMENT_CODE_BLOCK, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, ELEMENT_PARAGRAPH, MARK_BOLD, MARK_CODE, MARK_HIGHLIGHT, MARK_ITALIC, MARK_STRIKETHROUGH, MARK_SUBSCRIPT, MARK_SUPERSCRIPT, MARK_UNDERLINE } from "@udecode/plate";
 import { CUSTOM_ELEMENT_BULLETED_LIST } from "./plugins/BulletedList/types";
 import { CUSTOM_ELEMENT_HINT } from "./plugins/Hint/types";
+import { CUSTOM_ELEMENT_LINK } from "./plugins/Link/types";
 import { CUSTOM_ELEMENT_LIST_ITEM } from "./plugins/ListItem/types";
 import { CUSTOM_ELEMENT_ORDERED_LIST } from "./plugins/OrderedList/types";
 import { CUSTOM_ELEMENT_TODO_LIST } from "./plugins/TodoList/types";
@@ -11,7 +12,13 @@ export const initialValue = [
         children: [
             {text: "This is "},
             {text: "Heading one ", [MARK_BOLD]: true},
-            {text: "content"}
+            {
+                type: CUSTOM_ELEMENT_LINK,
+                url: "https://facebook.com",
+                children: [
+                    {text: "content"}
+                ]
+            }
         ]
     },
     {

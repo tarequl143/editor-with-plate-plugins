@@ -36,7 +36,6 @@
   display: none;
 }
 .custom-element {
-  font-size: 16px;
   font-weight: 400;
   font-family: "Poppins", sans-serif;
   line-height: 26px;
@@ -227,7 +226,7 @@ blockquote {
   position: relative;
   display: inline-block;
 }
-.relative.link {
+.link-element {
   color: #1668e3;
 }
 .relative.mention {

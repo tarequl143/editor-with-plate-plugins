@@ -4,7 +4,7 @@ const LinkElement = (props: any) => {
   console.log(element);
   
   return (
-    <span {...attributes} className="relative link">
+    <span {...attributes} className="custom-element link-element relative">
       <a
         href={element.url}
         className="absolute-view"

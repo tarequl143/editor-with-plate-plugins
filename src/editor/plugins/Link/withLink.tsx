@@ -6,11 +6,9 @@ import { CUSTOM_ELEMENT_LINK } from "./types";
 export const withLink = (): WithOverride<ReactEditor & SPEditor> => (
     editor
   ) => {
-    const { insertData, insertText, isInline } = editor
+    const { insertData, insertText } = editor
 
-  editor.isInline = (element:any) => {
-    return element.type === CUSTOM_ELEMENT_LINK ? true : isInline(element)
-  }
+  // editor.isInline = (element:any) => element.type === CUSTOM_ELEMENT_LINK;
 
   editor.insertText = text => {
     if (text && isUrl(text)) {
