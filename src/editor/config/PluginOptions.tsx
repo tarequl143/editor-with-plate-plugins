@@ -81,8 +81,8 @@ import { CUSTOM_ELEMENT_HINT } from '../plugins/Hint/types';
     ],
   };
   
-  export const editableProps = {
-    // placeholder: 'Enter some rich text…',
-    spellCheck: false,
-    autoFocus: true,
-  };
+  // export const editableProps = {
+  //   // placeholder: 'Enter some rich text…',
+  //   spellCheck: false,
+  //   autoFocus: true,
+  // };

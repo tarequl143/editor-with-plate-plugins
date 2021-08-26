@@ -243,7 +243,6 @@ blockquote {
 }
 .relative.mention:hover {
   background-color: #f1f6fe;
-  border-color: #f1f6fe;
 }
 .relative.mention .mentioned-url {
   position: absolute;
@@ -439,4 +438,131 @@ a.absolute-view {
   display: flex;
   border-radius: 6px;
 }
+
+.seperator-element-wrap {
+  padding: 25px 0;
+}
+.seperator-element-wrap hr {
+  border-top: 1px solid #cccccc;
+}
+.seperator-element-wrap.selected hr {
+  border-top: 1px solid #1668e3;
+}
 /* End Editor Elements Style */
+
+/* Link Form Style */
+.link-field {
+  position: relative;
+  box-sizing: border-box;
+  padding-right: 36px;
+  width: 300px;
+}
+
+.link-field input {
+  width: 100%;
+  padding-left: 45px;
+  height: 36px;
+  box-sizing: border-box;
+  border: none;
+  font-size: 15px;
+  border: 1px solid #d4d4d4;
+}
+.link-field input:focus {
+  outline: none;
+}
+.link-field .field-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  font-size: 20px;
+  color: #666666;
+  border-right: 1px solid #d4d4d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.link-field .submit {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 32px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #98e17d;
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+  border-radius: 0;
+  border: 1px solid #98e17d;
+  margin: 0;
+}
+/* End Link Form Style */
+
+/* Mention Toolbar Style */
+.mention_toolbar {
+  position: absolute;
+  left: -2000px;
+  top: -2000px;
+  z-index: 99999;
+  opacity: 0;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 10px #d4d4d4;
+  border-radius: 2px;
+  transition: opacity 0.75s ease 0s;
+  box-sizing: border-box;
+  width: max-content;
+  font-family: "Poppins", sans-serif;
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 5px;
+  width: 360px;
+}
+.mention-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  position: relative;
+  padding: 8px 10px 8px 40px;
+  box-sizing: border-box;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.mention-item.active {
+  background-color: #f1f2f4;
+}
+.mention-item:hover {
+  background-color: #f1f2f4;
+}
+.mention-item .item-icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  font-size: 16px;
+  line-height: 1;
+}
+.mention-item .item-info h6 {
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0 0 5px 0;
+  line-height: 1;
+}
+.mention-item .item-info p {
+  font-size: 12px;
+  font-weight: 400;
+  margin: 0;
+}
+/* End Mention Toolbar Style */
+
+[data-slate-node="element"] {
+  position: relative;
+}

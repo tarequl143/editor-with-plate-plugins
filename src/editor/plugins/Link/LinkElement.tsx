@@ -1,7 +1,5 @@
 const LinkElement = (props: any) => {
   const { attributes, children, element } = props;
-  console.log(children);
-  console.log(element);
   
   return (
     <span {...attributes} className="custom-element link-element relative">

@@ -53,7 +53,7 @@ function ImageElementOption(props: any) {
         className="image-placeholder-element-wrap"
         contentEditable="false"
         suppressContentEditableWarning
-        style={{border: selected && focused ? "2px solid  #06c" : "2px solid  #cccccc"}}
+        style={{border: selected && focused ? "2px solid  #06c" : "2px dashed  #cccccc"}}
       >
         <div className="image-placeholder-frame">
           <div className="image-placeholder-content">

@@ -2,8 +2,10 @@ import { ELEMENT_PARAGRAPH, someNode } from "@udecode/plate";
 import { CUSTOM_ELEMENT_BULLETED_LIST } from "../plugins/BulletedList/types";
 import { CUSTOM_ELEMENT_ORDERED_LIST } from "../plugins/OrderedList/types";
 import { CUSTOM_ELEMENT_LIST_ITEM } from "../plugins/ListItem/types";
-import { Transforms, Range } from "slate";
+import { Transforms } from "slate";
 import { CUSTOM_ELEMENT_TODO_LIST } from "../plugins/TodoList/types";
+import { CUSTOM_ELEMENT_SEPERATOR } from "../plugins/Seperator/types";
+import { CUSTOM_ELEMENT_MENTION_ITEM } from "../plugins/Mention/types";
 const LIST_TYPES = [CUSTOM_ELEMENT_ORDERED_LIST, CUSTOM_ELEMENT_BULLETED_LIST];
 
 export const isBlockActive = (editor: any, format: any) => {
@@ -13,6 +15,8 @@ export const isBlockActive = (editor: any, format: any) => {
 };
 
 export const toggleBlock = (editor: any, format: any) => {
+
+    // editor.isVoid = (element: any) => element.type === CUSTOM_ELEMENT_SEPERATOR;
 
     const isActive = isBlockActive(editor, format);
     
@@ -35,6 +39,12 @@ export const toggleBlock = (editor: any, format: any) => {
                 checked: false
             };
         }
+    } else if(format === CUSTOM_ELEMENT_SEPERATOR) {
+        newProperties = {
+            type: CUSTOM_ELEMENT_SEPERATOR,
+            children: [{text:""}]
+        };
+        Transforms.unsetNodes(editor, ["checked", "children"]);
     } else {
         newProperties = {
             type: isActive ? ELEMENT_PARAGRAPH : isList ? CUSTOM_ELEMENT_LIST_ITEM : format,
@@ -51,55 +61,15 @@ export const toggleBlock = (editor: any, format: any) => {
     }
 };
 
-// export const validURL = (str: string) => {
-//     var pattern = new RegExp(
-//       "^(https?:\\/\\/)?" + // protocol
-//         "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-//         "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-//         "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-//         "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-//         "(\\#[-a-z\\d_]*)?$",
-//       "i"
-//     ); // fragment locator
-//     return !!pattern.test(str);
-//   };
-  
-//   // Is Link Active
-//   export const isLinkActive = (editor: any) => {
-//     const [link]: any = !!editor?.selection && someNode(editor, { match: { type: "custom_elem_link" } });
-//     return !!link;
-//   };
-  
-//   // Remove Link if Link is Active
-//   export const unwrapLink = (editor: any) => {
-//     Transforms.unwrapNodes(editor, { match: (n) => n.type === "custom_elem_link" });
-//   };
-  
-//   // Toggle Link
-//   export const wrapLink = (editor: any, url: any) => {
-//     if (isLinkActive(editor)) {
-//       unwrapLink(editor);
-//     }
-  
-//     const { selection } = editor;
-//     const isCollapsed = selection && Range.isCollapsed(selection);
-//     const link = {
-//       type: "custom_elem_link",
-//       url,
-//       children: isCollapsed ? [{ text: url }] : [],
-//     };
-  
-//     if (isCollapsed) {
-//       Transforms.insertNodes(editor, link);
-//     } else {
-//       Transforms.wrapNodes(editor, link, { split: true });
-//       Transforms.collapse(editor, { edge: "end" });
-//     }
-//   };
-  
-//   // Insert Link
-//   export const insertLink = (editor: any, url: string) => {
-//     if (editor.selection) {
-//       wrapLink(editor, url);
-//     }
-//   };
+export const insertMention = (editor: any, character: string) => {    
+    editor.isInline = (element: any) => element.type === CUSTOM_ELEMENT_MENTION_ITEM;
+    editor.isVoid = (element: any) => element.type === CUSTOM_ELEMENT_MENTION_ITEM;
+    const mention: any = {
+      type: CUSTOM_ELEMENT_MENTION_ITEM,
+      character,
+      url: "https://thiswillbementionurl.url",
+      children: [{ text: "" }],
+    };
+    Transforms.insertNodes(editor, mention);
+    Transforms.move(editor);
+  };

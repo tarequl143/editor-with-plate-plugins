@@ -8,8 +8,6 @@ const TodoListElement = (props: any) => {
   
   const readOnly = useReadOnly();
   const { checked } = element;
-
-  console.log(element);
   
   return (
     <div {...attributes} className="custom-element checklist-element">

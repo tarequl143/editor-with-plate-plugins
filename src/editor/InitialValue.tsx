@@ -3,6 +3,7 @@ import { CUSTOM_ELEMENT_BULLETED_LIST } from "./plugins/BulletedList/types";
 import { CUSTOM_ELEMENT_HINT } from "./plugins/Hint/types";
 import { CUSTOM_ELEMENT_LINK } from "./plugins/Link/types";
 import { CUSTOM_ELEMENT_LIST_ITEM } from "./plugins/ListItem/types";
+import { CUSTOM_ELEMENT_MENTION_ITEM } from "./plugins/Mention/types";
 import { CUSTOM_ELEMENT_ORDERED_LIST } from "./plugins/OrderedList/types";
 import { CUSTOM_ELEMENT_TODO_LIST } from "./plugins/TodoList/types";
 
@@ -12,13 +13,13 @@ export const initialValue = [
         children: [
             {text: "This is "},
             {text: "Heading one ", [MARK_BOLD]: true},
-            {
-                type: CUSTOM_ELEMENT_LINK,
-                url: "https://facebook.com",
-                children: [
-                    {text: "content"}
-                ]
-            }
+            // {
+            //     type: CUSTOM_ELEMENT_LINK,
+            //     url: "https://facebook.com",
+            //     children: [
+            //         {text: "content"}
+            //     ]
+            // }
         ]
     },
     {
@@ -26,7 +27,15 @@ export const initialValue = [
         children: [
             {text: "This is "},
             {text: "Heading two ", [MARK_ITALIC]: true},
-            {text: "content"}
+            {text: "content"},
+            // {
+            //     type: CUSTOM_ELEMENT_MENTION_ITEM,
+            //     url: "https://facebook.com",
+            //     character: "Anaet",
+            //     children: [
+            //         {text: ""}
+            //     ]
+            // }
         ]
     },
     {

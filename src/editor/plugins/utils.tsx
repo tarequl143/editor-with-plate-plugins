@@ -1,4 +1,3 @@
-import { isUrl, someNode } from "@udecode/plate";
 import { Editor, Transforms, Range } from "slate";
 import { CUSTOM_ELEMENT_LINK } from "./Link/types";
 
@@ -27,9 +26,7 @@ export const validURL = (str: string) => {
   
   // Remove Link if Link is Active
   export const unwrapLink = (editor: any) => {
-    Transforms.unwrapNodes(editor, { match: (n:any) => {
-        console.log("Unwrap Console", n);
-        
+    Transforms.unwrapNodes(editor, { match: (n:any) => {  
         return n.type === CUSTOM_ELEMENT_LINK
     } });
   };
@@ -41,24 +38,6 @@ export const validURL = (str: string) => {
     }
 
     editor.isInline = (element: any) => element.type === CUSTOM_ELEMENT_LINK;
-
-    // editor.insertText = (text:any) => {
-    //   if (text && isUrl(text)) {
-    //     wrapLink(editor, text)
-    //   } else {
-    //     editor.insertText(text)
-    //   }
-    // }
-  
-    // editor.insertData = (data:any) => {
-    //   const text = data.getData('text/plain')
-  
-    //   if (text && isUrl(text)) {
-    //     wrapLink(editor, text)
-    //   } else {
-    //     editor.insertData(data)
-    //   }
-    // }
   
     const { selection } = editor;
     const isCollapsed = selection && Range.isCollapsed(selection);
@@ -68,12 +47,9 @@ export const validURL = (str: string) => {
       children: isCollapsed ? [{ text: url }] : [],
     };
   
-    if (isCollapsed) {
-        console.log("IsCollapsed Console", link);
-        
+    if (isCollapsed) {    
       Transforms.insertNodes(editor, link);
     } else {
-        console.log("UnCollapsed Console", link);
       Transforms.wrapNodes(editor, link, { split: true });
       Transforms.collapse(editor, { edge: "end" });
     }
@@ -81,7 +57,6 @@ export const validURL = (str: string) => {
   
   // Insert Link
   export const insertLink = (editor: any, url: string) => {
-      console.log(editor.selection);
       
     if (editor.selection) {
       wrapLink(editor, url);

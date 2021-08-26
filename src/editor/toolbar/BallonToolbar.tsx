@@ -1,11 +1,4 @@
-import { ELEMENT_BLOCKQUOTE, ELEMENT_CODE_BLOCK, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, getPlatePluginType, MARK_BOLD, MARK_ITALIC, MARK_UNDERLINE, ToolbarElement, ToolbarMark, useEventEditorId, useStoreEditorRef, ELEMENT_UL, ELEMENT_OL, MARK_CODE, MARK_STRIKETHROUGH, MARK_SUPERSCRIPT, MARK_SUBSCRIPT, MARK_HIGHLIGHT, someNode, ELEMENT_LI,
-  ELEMENT_LIC,
-  ELEMENT_LINK,
-  ELEMENT_TODO_LI,
-  ToolbarList,
-  getPreventDefaultHandler,
-  toggleList,
-} from "@udecode/plate";
+import { ELEMENT_BLOCKQUOTE, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, getPlatePluginType, MARK_BOLD, MARK_ITALIC, MARK_UNDERLINE, ToolbarMark, useEventEditorId, useStoreEditorRef, MARK_CODE, MARK_STRIKETHROUGH, MARK_SUPERSCRIPT, MARK_SUBSCRIPT, MARK_HIGHLIGHT} from "@udecode/plate";
 import {GoBold} from "react-icons/go";
 import {FiItalic, FiUnderline, FiCheckSquare} from "react-icons/fi";
 import {AiOutlineStrikethrough, AiFillCode, AiOutlineExclamationCircle, AiOutlineLink, AiOutlineHighlight} from "react-icons/ai";
@@ -17,7 +10,7 @@ import {
   ELEMENT_EXCALIDRAW,
 } from '@udecode/plate-excalidraw';
 
-import { TBallonToolbarContent } from "./InlineToolbarStyle";
+import { TBallonToolbarContent } from "./ToolbarStyle";
 import ToolbarCustomBtn from "./toolbarButtons/ToolbarCustomBtn";
 import { CUSTOM_ELEMENT_HINT } from "../plugins/Hint/types";
 import { CUSTOM_ELEMENT_BULLETED_LIST } from "../plugins/BulletedList/types";
@@ -34,29 +27,15 @@ interface IBallonToolbarProps {
   link?: string
   isOpenLinkForm?: boolean
   onLinkFormSubmit?: any
+  lastSelection?:any
+  width?: any
 }
 
 const BallonToolbar = (props:IBallonToolbarProps) => {
 
-    const {linkSet, isOpenLinkFormSet, isOpenLinkForm, onLinkFormSubmit} = props;
-    
+    const {linkSet, isOpenLinkFormSet, isOpenLinkForm, onLinkFormSubmit, lastSelection, width:toolbarWidth} = props;
+
     const editor = useStoreEditorRef(useEventEditorId('focus'));
-  
-  
-    // useEffect(() => {
-    //   if (isOpenLinkForm && editor) {
-    //     editorSelection.current = editor.selection;
-    //   }
-    // }, [isOpenLinkForm]);
-  
-    // const onLinkFormSubmit = (e: any) => {
-    //   e.preventDefault();
-    //   editor?.selection = editorSelection.current;
-    //   if (link) {
-    //     insertLink(editor, link);
-    //     setIsOpenLinkForm(false);
-    //   }
-    // };
 
     const tooltip:any = {
       arrow: true,
@@ -143,12 +122,14 @@ const BallonToolbar = (props:IBallonToolbarProps) => {
             type={getPlatePluginType(editor, CUSTOM_ELEMENT_LINK)}
             linkSet={props.linkSet}
             isLinkFormSet={isOpenLinkFormSet}
+            lastSelection={lastSelection}
             icon={<AiOutlineLink />}
           />
         </TBallonToolbarContent>
        ) : (
           <div className="absolute-field" id="link-form">
             <form onSubmit={(e) => onLinkFormSubmit(e)}>
+              {/* <div className="link-field" style={{width: toolbarWidth ? toolbarWidth : "300px"}}> */}
               <div className="link-field">
                 <span className="field-icon">
                   <BiLink />

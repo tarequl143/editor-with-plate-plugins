@@ -3,7 +3,6 @@ import {
     createBoldPlugin,
     createCodeBlockPlugin,
     createCodePlugin,
-    createHeadingPlugin,
     createHistoryPlugin,
     createImagePlugin,
     createItalicPlugin,
@@ -11,17 +10,13 @@ import {
     createPlateComponents,
     createPlateOptions,
     createReactPlugin,
-    createSelectOnBackspacePlugin,
     createStrikethroughPlugin,
     createUnderlinePlugin,
     Plate,
     useEventEditorId,
     useStoreEditorRef,
-    isCollapsed,
     createSoftBreakPlugin,
     createExitBreakPlugin,
-    createListPlugin,
-    createTodoListPlugin,
     createSubscriptPlugin,
     createHighlightPlugin,
     createSuperscriptPlugin,
@@ -33,9 +28,8 @@ import {
     ELEMENT_PARAGRAPH,
     withProps,
     StyledElement,
-    ELEMENT_H1,
-    MARK_BOLD,
-    createLinkPlugin
+    createLinkPlugin,
+    SPEditor
 } from '@udecode/plate';
 import {initialValue} from "./InitialValue";
 import {
@@ -43,21 +37,24 @@ import {
     ELEMENT_EXCALIDRAW,
     ExcalidrawElement,
   } from '@udecode/plate-excalidraw';
-import { BaseRange, Editor, Range, Location, BaseSelection } from "slate";
+import { Editor, Range, Location, BaseRange, Path, Text, createEditor, BaseEditor } from "slate";
 import "./editor.css";
-import { useEffect, useRef, useState } from 'react';
-import { EditorWrapper, SlashToolbarWrapper } from "./EditorIndex.style"
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { EditorWrapper } from "./EditorIndex.style"
 import { createImageOptionPlugin } from "./plugins/ImageOption/createImageOptionPlugin";
 import BallonToolbar from "./toolbar/BallonToolbar";
-import HeaderToolbar from './toolbar/HeaderToolbar';
-import { TBallonToolbar } from './toolbar/InlineToolbarStyle';
-import { ReactEditor } from 'slate-react';
-import { editableProps, optionsExitBreakPlugin, optionsResetBlockTypePlugin, optionsSoftBreakPlugin } from './config/PluginOptions';
+import { TBallonToolbar, SlashToolbarWrapper } from './toolbar/ToolbarStyle';
+import { DefaultLeaf, ReactEditor, RenderLeafProps } from 'slate-react';
+import { optionsExitBreakPlugin, optionsResetBlockTypePlugin, optionsSoftBreakPlugin } from './config/PluginOptions';
 import { optionsAutoformat } from './config/AutoFormatRules';
 import { CustomParagraphElement } from './plugins/Paragraph/ParagraphElement';
 import { insertLink } from './plugins/utils';
 import { Transforms } from 'slate';
 import SlashToolbar from './toolbar/SlashToolbar';
+import { CHARACTERS } from "./toolbar/Characters";
+import { insertMention } from './toolbar/utils';
+import MentionItem from './plugins/Mention/MentionItem';
+import { useMemo } from 'react';
 
 
 // All Plguins
@@ -103,20 +100,30 @@ const plugins = [
 const EditorIndex = () => {
 
     const [value, setValue] = useState<string | null>(null);
-    const editor = useStoreEditorRef(useEventEditorId('focus'));
+    const editor = useMemo(() => createEditor(), []) as SPEditor & BaseEditor & ReactEditor;
 
     // @ and / Toolbar Necessary Things
     const slashToolbarRef:any = useRef();
+    const mentionToolbarRef:any = useRef();
     const [target, setTarget] = useState<any>("");
     const [defaultToolbarTarget, setDefaultToolbarTarget] = useState<any>("");
     const [index, setIndex] = useState<number>(0);
+    const [ballonToolbarWidth, setBallonToolbarWidth] = useState<number>(0);
+    const [toolbarLeft, setToolbarLeft] = useState<number>(0);
 
     // Link Form Necessary Things
     const ref:any = useRef();
 
+    useEffect(() => {
+      const BallonToolbarWidth = ref.current.offsetWidth;
+      setBallonToolbarWidth(BallonToolbarWidth)
+    },[]);
+    
+
     const [link, setLink] = useState<string>("");
     const [isOpenLinkForm, setIsOpenLinkForm] = useState<boolean>(false);
     const editorSelection = useRef(editor?.selection);
+    const [lastSelection, setLastSelection] = useState<Range | null>(null);
 
     const setLinkFunc = (url: "") => {
       setLink(url);
@@ -127,6 +134,12 @@ const EditorIndex = () => {
       
       console.log(editor?.selection);
     }
+
+    useEffect(() => {
+      if(editor.selection !== null) {
+        setLastSelection(editor.selection);
+      }
+    }, [editor.selection]);
 
     useEffect(() => {
       if (isOpenLinkForm) {
@@ -149,8 +162,6 @@ const EditorIndex = () => {
 
       console.log(editorSelection.current);
       
-      
-      
       //   editor.selection = editorSelection.current;
       
       if (link) {
@@ -171,7 +182,9 @@ const EditorIndex = () => {
         if (!elem) {
           return;
         }
-    
+
+        const EditorId:any = document.getElementById("editor");
+
         if (
           !selection ||
           !ReactEditor.isFocused(editor) ||
@@ -179,6 +192,17 @@ const EditorIndex = () => {
           Editor.string(editor, selection) === ""
         ) {
           if (isOpenLinkForm) {
+            let newLeft = 0;
+
+            if(toolbarLeft - 150 <= EditorId.offsetLeft) {
+              newLeft = EditorId.offsetLeft;
+            } else if(toolbarLeft - 150 >= EditorId.offsetLeft + EditorId.offsetWidth - 300) {
+              newLeft = EditorId.offsetLeft + EditorId.offsetWidth - 300
+            } else {
+              newLeft = toolbarLeft - 150
+            }
+            
+            elem.style.left = `${newLeft}px`;
             return;
           }
           elem.removeAttribute("style");
@@ -187,12 +211,17 @@ const EditorIndex = () => {
     
         setIsOpenLinkForm(false);
         setLink("");
-
-        const EditorId:any = document.getElementById("editor");
     
         const domSelection: any = window.getSelection();
+
+        // const rect = domSelection.getRangeAt(0).getBoundingClientRect();
+        // elem.style.opacity = "1";
+        // elem.style.top = `${
+        //   rect.top + window.pageYOffset - elem.offsetHeight - 12
+        // }px`;
+        // elem.style.left = `${rect.left + window.pageXOffset + rect.width / 2}px`;
+        // elem.style.transform = "translateX(-50%)";
         
-    
         const rect = domSelection.getRangeAt(0).getBoundingClientRect();
         
         let ToolbarLeft:number = 0;
@@ -206,19 +235,19 @@ const EditorIndex = () => {
         } else {
             ToolbarLeft = rect.left + window.pageXOffset + rect.width / 2 - elem.offsetWidth / 2;
         }
-        
+        setToolbarLeft(rect.left + window.pageXOffset + rect.width / 2);
         elem.style.opacity = "1";
         elem.style.top = `${ToolbarTop}px`;
         elem.style.left = `${ToolbarLeft}px`;
-        // elem.style.transform = "translateX(-50%)";
     };
 
     useEffect(() => {
-        toggleBallonToolbar();
+        toggleBallonToolbar();      
         // setIsOpenLinkForm(false)
         // setLink("");
     })
 
+    // 
     const onChangeValue = (newValue: any) => {      
         setValue(`value ${JSON.stringify(newValue)}`);
         toggleBallonToolbar();
@@ -257,6 +286,60 @@ const EditorIndex = () => {
         
     }
 
+    // Mention Toolbar
+    const onKeyDown = useCallback(
+      (event) => {
+        if (target) {
+          switch (event.key) {
+            case "ArrowDown":
+              event.preventDefault();
+              const prevIndex = index >= CHARACTERS.length - 1 ? 0 : index + 1;
+              console.log(prevIndex);
+              setIndex(prevIndex);
+              break;
+            case "ArrowUp":
+              event.preventDefault();
+              const nextIndex = index <= 0 ? CHARACTERS.length - 1 : index - 1;
+              console.log(nextIndex);
+              setIndex(nextIndex);
+              break;
+            case "Tab":
+            case "Enter":
+              event.preventDefault();
+              if(!editor) return;
+              Transforms.select(editor, target);
+              insertMention(editor, CHARACTERS[index]);
+              setTarget(null);
+              break;
+            case "Escape":
+              event.preventDefault();
+              setTarget(null);
+              break;
+          }
+        }
+      },
+      [index, target]
+    );
+  
+    const mentionClick = (index: number) => {
+      if(!editor) return;
+      Transforms.select(editor, target);
+      insertMention(editor, CHARACTERS[index]);
+      setTarget(null);
+    };
+  
+    useEffect(() => {
+      if (target && CHARACTERS.length > 0) {
+        const el: any = mentionToolbarRef.current;
+        if(!editor) return;
+        const domRange = ReactEditor.toDOMRange(editor, target);
+        const rect = domRange.getBoundingClientRect();
+        el.style.opacity = "1";
+        el.style.top = `${rect.top + window.pageYOffset + 24}px`;
+        el.style.left = `${rect.left + window.pageXOffset}px`;
+      }
+    }, [CHARACTERS.length, editor, index, target]);
+
     // Slash Toolbar Toggler
     useEffect(() => {
       if (defaultToolbarTarget) {
@@ -281,9 +364,79 @@ const EditorIndex = () => {
       })
     const options = createPlateOptions();
 
+    // editable's decorate props handler method
+    const decorate = ([node, path]: [node: Node, path: Path]) => {
+      
+        if(Text.isText(node) && editor.selection == null && lastSelection !== null) {
+          const intersection = Range.intersection(lastSelection, Editor.range(editor, path))
+
+          if(intersection === null) {
+            return []
+          }
+
+          return [{
+            highlighted: true,
+            ...intersection
+          }]
+        }
+
+        if (editor.selection != null) {
+          if (
+            !Editor.isEditor(node) &&
+            Editor.string(editor, [path[0]]) === "" &&
+            Range.includes(editor.selection, path) &&
+            Range.isCollapsed(editor.selection)
+          ) {
+            return [
+              {
+                ...editor.selection,
+                placeholder: true,
+              },
+            ];
+          }
+        }
+      
+      return []
+    }
+
+    // editable's renderLeaf props handler method
+    const renderLeaf = ({leaf, attributes, children, ...otherProps}: RenderLeafProps) => {
+      console.log(leaf);
+      console.log(attributes);
+      console.log(children);
+      console.log(otherProps);
+      
+      if (leaf.hasOwnProperty('highlighted') && (leaf as any).highlighted) {
+        return <span {...attributes} style={{background: "#a9f4be"}}>{children}</span>
+      }
+      if (leaf.hasOwnProperty('placeholder') && (leaf as any).placeholder && children?.props?.parent?.type === "p") {
+        return (
+          <>
+            <DefaultLeaf leaf={leaf} attributes={attributes} children={children} {...otherProps} />
+            <span
+              style={{ opacity: 0.3, position: "absolute", top: "50%", transform: "translateY(-50%)" }}
+              contentEditable={false}
+            >
+              Type / to browse options and Type @ to mention someone
+            </span>
+          </>
+        );
+      }
+      return <DefaultLeaf leaf={leaf} attributes={attributes} children={children} {...otherProps} />
+    }
+
+
+    const editableProps:any = {
+      // placeholder: 'Enter some rich text…',
+      spellCheck: false,
+      autoFocus: true,
+      onKeyDown: onKeyDown,
+      decorate,
+      renderLeaf
+    };
+
     return (
         <EditorWrapper id="editor">
-            <HeaderToolbar />
             <TBallonToolbar ref={ref}>
                 <BallonToolbar 
                   linkSet={setLinkFunc}
@@ -291,6 +444,8 @@ const EditorIndex = () => {
                   isOpenLinkForm={isOpenLinkForm}
                   isOpenLinkFormSet={setIsOpenLinkFormFunc}
                   onLinkFormSubmit={onLinkFormSubmit}
+                  lastSelection={editorSelection}
+                  width={ballonToolbarWidth}
                 />
             </TBallonToolbar>
             {defaultToolbarTarget &&
@@ -298,7 +453,25 @@ const EditorIndex = () => {
                 <SlashToolbar />
               </SlashToolbarWrapper>
             }
-            <Plate editableProps={editableProps} plugins={plugins} components={components}
+            {target && CHARACTERS.length > 0 && (
+            <div className="mention_toolbar" ref={mentionToolbarRef}>
+              <div className="mention_toolbar_content">
+                {CHARACTERS &&
+                  CHARACTERS.map((item, ind) => {
+                    return (
+                      <MentionItem
+                        name={item}
+                        key={ind}
+                        className={ind === index ? "active" : ""}
+                        onMouseDown={mentionClick}
+                        index={ind}
+                      ></MentionItem>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+            <Plate editor={editor} enabled={true} editableProps={editableProps} plugins={plugins} components={components}
                 options={options} onChange={onChangeValue} initialValue={initialValue}
             >
                 
