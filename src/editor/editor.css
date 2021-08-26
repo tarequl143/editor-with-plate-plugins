@@ -93,6 +93,10 @@ sup {
 sub {
   bottom: -5px;
 }
+code {
+  background-color: #f1f2f4;
+  padding: 3px 5px;
+}
 .quote-element-wrap {
   position: relative;
   margin: 12px 0;

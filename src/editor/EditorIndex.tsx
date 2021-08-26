@@ -55,6 +55,7 @@ import { CHARACTERS } from "./toolbar/Characters";
 import { insertMention } from './toolbar/utils';
 import MentionItem from './plugins/Mention/MentionItem';
 import { useMemo } from 'react';
+import { LeafRendere } from './LeafRenderer';
 
 
 // All Plguins
@@ -399,40 +400,12 @@ const EditorIndex = () => {
       return []
     }
 
-    // editable's renderLeaf props handler method
-    const renderLeaf = ({leaf, attributes, children, ...otherProps}: RenderLeafProps) => {
-      console.log(leaf);
-      console.log(attributes);
-      console.log(children);
-      console.log(otherProps);
-      
-      if (leaf.hasOwnProperty('highlighted') && (leaf as any).highlighted) {
-        return <span {...attributes} style={{background: "#a9f4be"}}>{children}</span>
-      }
-      if (leaf.hasOwnProperty('placeholder') && (leaf as any).placeholder && children?.props?.parent?.type === "p") {
-        return (
-          <>
-            <DefaultLeaf leaf={leaf} attributes={attributes} children={children} {...otherProps} />
-            <span
-              style={{ opacity: 0.3, position: "absolute", top: "50%", transform: "translateY(-50%)" }}
-              contentEditable={false}
-            >
-              Type / to browse options and Type @ to mention someone
-            </span>
-          </>
-        );
-      }
-      return <DefaultLeaf leaf={leaf} attributes={attributes} children={children} {...otherProps} />
-    }
-
-
     const editableProps:any = {
-      // placeholder: 'Enter some rich text…',
       spellCheck: false,
       autoFocus: true,
       onKeyDown: onKeyDown,
       decorate,
-      renderLeaf
+      renderLeaf: LeafRendere
     };
 
     return (
