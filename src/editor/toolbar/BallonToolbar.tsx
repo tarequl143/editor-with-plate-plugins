@@ -28,12 +28,11 @@ interface IBallonToolbarProps {
   isOpenLinkForm?: boolean
   onLinkFormSubmit?: any
   lastSelection?:any
-  width?: any
 }
 
 const BallonToolbar = (props:IBallonToolbarProps) => {
 
-    const {linkSet, isOpenLinkFormSet, isOpenLinkForm, onLinkFormSubmit, lastSelection, width:toolbarWidth} = props;
+    const {linkSet, isOpenLinkFormSet, isOpenLinkForm, onLinkFormSubmit, lastSelection} = props;
 
     const editor = useStoreEditorRef(useEventEditorId('focus'));
 

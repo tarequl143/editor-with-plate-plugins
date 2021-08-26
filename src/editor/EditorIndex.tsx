@@ -13,8 +13,6 @@ import {
     createStrikethroughPlugin,
     createUnderlinePlugin,
     Plate,
-    useEventEditorId,
-    useStoreEditorRef,
     createSoftBreakPlugin,
     createExitBreakPlugin,
     createSubscriptPlugin,
@@ -37,14 +35,14 @@ import {
     ELEMENT_EXCALIDRAW,
     ExcalidrawElement,
   } from '@udecode/plate-excalidraw';
-import { Editor, Range, Location, BaseRange, Path, Text, createEditor, BaseEditor } from "slate";
+import { Editor, Range, Location, Path, Text, createEditor, BaseEditor } from "slate";
 import "./editor.css";
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { EditorWrapper } from "./EditorIndex.style"
 import { createImageOptionPlugin } from "./plugins/ImageOption/createImageOptionPlugin";
 import BallonToolbar from "./toolbar/BallonToolbar";
 import { TBallonToolbar, SlashToolbarWrapper } from './toolbar/ToolbarStyle';
-import { DefaultLeaf, ReactEditor, RenderLeafProps } from 'slate-react';
+import { ReactEditor } from 'slate-react';
 import { optionsExitBreakPlugin, optionsResetBlockTypePlugin, optionsSoftBreakPlugin } from './config/PluginOptions';
 import { optionsAutoformat } from './config/AutoFormatRules';
 import { CustomParagraphElement } from './plugins/Paragraph/ParagraphElement';
@@ -63,13 +61,13 @@ const plugins = [
     ...createBasicElementPlugins(),
     
     // editor
-    createReactPlugin(),          // withReact
-    createHistoryPlugin(),        // withHistory
+    createReactPlugin(),
+    createHistoryPlugin(),
 
     // elements
-    createParagraphPlugin(),      // paragraph element
-    createBlockquotePlugin(),     // blockquote element
-    createCodeBlockPlugin(),      // code block element
+    createParagraphPlugin(),
+    createBlockquotePlugin(),
+    createCodeBlockPlugin(),
     createExcalidrawPlugin(),
     createImagePlugin(),
     createImageOptionPlugin(),
@@ -78,11 +76,11 @@ const plugins = [
     createLinkPlugin(),
    
     // marks
-    createBoldPlugin(),           // bold mark
-    createItalicPlugin(),         // italic mark
-    createUnderlinePlugin(),      // underline mark
-    createStrikethroughPlugin(),  // strikethrough mark
-    createCodePlugin(),           // code mark
+    createBoldPlugin(),
+    createItalicPlugin(),
+    createUnderlinePlugin(),
+    createStrikethroughPlugin(),
+    createCodePlugin(),
     createHighlightPlugin(),
     createSubscriptPlugin(),
     createSuperscriptPlugin(),
@@ -100,71 +98,66 @@ const plugins = [
 
 const EditorIndex = () => {
 
+    // Editor Value
     const [value, setValue] = useState<string | null>(null);
+
+    // Editor Creating
     const editor = useMemo(() => createEditor(), []) as SPEditor & BaseEditor & ReactEditor;
 
-    // @ and / Toolbar Necessary Things
+    // @ and / Toolbar Necessary States and Refs
+    const ballonToolberRef:any = useRef();
     const slashToolbarRef:any = useRef();
     const mentionToolbarRef:any = useRef();
     const [target, setTarget] = useState<any>("");
     const [defaultToolbarTarget, setDefaultToolbarTarget] = useState<any>("");
     const [index, setIndex] = useState<number>(0);
-    const [ballonToolbarWidth, setBallonToolbarWidth] = useState<number>(0);
     const [toolbarLeft, setToolbarLeft] = useState<number>(0);
-
-    // Link Form Necessary Things
-    const ref:any = useRef();
-
-    useEffect(() => {
-      const BallonToolbarWidth = ref.current.offsetWidth;
-      setBallonToolbarWidth(BallonToolbarWidth)
-    },[]);
     
-
+    // Set DefaultToolbarTarget null
+    const setDefaultToolbarTargetFunc = () => {
+      setDefaultToolbarTarget(null);
+    }
+  
+    // Necessary States for Link element
     const [link, setLink] = useState<string>("");
     const [isOpenLinkForm, setIsOpenLinkForm] = useState<boolean>(false);
     const editorSelection = useRef(editor?.selection);
     const [lastSelection, setLastSelection] = useState<Range | null>(null);
 
+    // On Change Link Value
     const setLinkFunc = (url: "") => {
       setLink(url);
     }
 
+    // Link form toggler
     const setIsOpenLinkFormFunc = (value:boolean) => {
       setIsOpenLinkForm(value);
-      
-      console.log(editor?.selection);
     }
 
+    // Set Last Selection To State to decorate selected leaf
     useEffect(() => {
       if(editor.selection !== null) {
         setLastSelection(editor.selection);
       }
     }, [editor.selection]);
 
+
+    // If Link Form Open
     useEffect(() => {
       if (isOpenLinkForm) {
         editorSelection.current = editor?.selection;
-        
         if(!editor) return;
-        // Transforms.setSelection(editor, editorSelection.current as Partial<BaseRange>);
         Transforms.select(editor, editorSelection.current as Location);
-        console.log(editor.selection);
-        
-        
       }
     }, [isOpenLinkForm]);
 
+
+    // On Click Link Form
     const onLinkFormSubmit = (e: any) => {
       e.preventDefault();
-    
       if(!editor) return;
       Transforms.select(editor, editorSelection.current as Location);
 
-      console.log(editorSelection.current);
-      
-      //   editor.selection = editorSelection.current;
-      
       if (link) {
         insertLink(editor, link);
         setIsOpenLinkFormFunc(false);
@@ -173,11 +166,13 @@ const EditorIndex = () => {
       }
     };
 
+
+    // Ballon Toolbar Toggoler
     const toggleBallonToolbar = () => {
         if(!editor) {
           return;
         }
-        const elem: any = ref.current;
+        const elem: any = ballonToolberRef.current;
         const { selection } = editor;
     
         if (!elem) {
@@ -214,14 +209,6 @@ const EditorIndex = () => {
         setLink("");
     
         const domSelection: any = window.getSelection();
-
-        // const rect = domSelection.getRangeAt(0).getBoundingClientRect();
-        // elem.style.opacity = "1";
-        // elem.style.top = `${
-        //   rect.top + window.pageYOffset - elem.offsetHeight - 12
-        // }px`;
-        // elem.style.left = `${rect.left + window.pageXOffset + rect.width / 2}px`;
-        // elem.style.transform = "translateX(-50%)";
         
         const rect = domSelection.getRangeAt(0).getBoundingClientRect();
         
@@ -242,13 +229,12 @@ const EditorIndex = () => {
         elem.style.left = `${ToolbarLeft}px`;
     };
 
+    // On Changes Editor Ballon Toolber Update
     useEffect(() => {
         toggleBallonToolbar();      
-        // setIsOpenLinkForm(false)
-        // setLink("");
     })
 
-    // 
+    // On Change Editor Value
     const onChangeValue = (newValue: any) => {      
         setValue(`value ${JSON.stringify(newValue)}`);
         toggleBallonToolbar();
@@ -266,17 +252,14 @@ const EditorIndex = () => {
           }
 
           chBefore = Editor.string(editor, target)
-          console.log(`chBefore`, chBefore, chBefore.length);
 
           if(chBefore === '@' || chBefore === ' @') {
-            console.log('%c@', "color: red; font-size: 50px;");
             setTarget(target);
             setIndex(0);
             return;
           }
 
           if(chBefore === '/' || chBefore === ' /') {
-            console.log('%c/', "color: red; font-size: 50px;");
             setDefaultToolbarTarget(target);
             return
           }
@@ -287,7 +270,7 @@ const EditorIndex = () => {
         
     }
 
-    // Mention Toolbar
+    // Mention Toolbar Keyboard Key Functionality
     const onKeyDown = useCallback(
       (event) => {
         if (target) {
@@ -322,6 +305,7 @@ const EditorIndex = () => {
       [index, target]
     );
   
+    // On Mention Item Click
     const mentionClick = (index: number) => {
       if(!editor) return;
       Transforms.select(editor, target);
@@ -329,6 +313,8 @@ const EditorIndex = () => {
       setTarget(null);
     };
   
+
+    // Mention Toolbar Toggler
     useEffect(() => {
       if (target && CHARACTERS.length > 0) {
         const el: any = mentionToolbarRef.current;
@@ -341,6 +327,7 @@ const EditorIndex = () => {
       }
     }, [CHARACTERS.length, editor, index, target]);
 
+
     // Slash Toolbar Toggler
     useEffect(() => {
       if (defaultToolbarTarget) {
@@ -349,7 +336,6 @@ const EditorIndex = () => {
         if(!editor) return
         const domRange = ReactEditor.toDOMRange(editor, defaultToolbarTarget);
         const rect = domRange.getBoundingClientRect();
-        console.log(rect);
         el.style.opacity = "1";
         el.style.top = `${rect.top + + window.pageYOffset + rect.height + 5}px`;
         el.style.left = `${rect?.left}px`;
@@ -357,6 +343,7 @@ const EditorIndex = () => {
     }, [editor, defaultToolbarTarget]);
 
 
+    // Overwrite components with CreatePlateComponents
     const components = createPlateComponents({
         [ELEMENT_PARAGRAPH]: withProps(StyledElement, {
           as: CustomParagraphElement,
@@ -364,6 +351,7 @@ const EditorIndex = () => {
         [ELEMENT_EXCALIDRAW]: ExcalidrawElement as any
       })
     const options = createPlateOptions();
+
 
     // editable's decorate props handler method
     const decorate = ([node, path]: [node: Node, path: Path]) => {
@@ -400,6 +388,7 @@ const EditorIndex = () => {
       return []
     }
 
+    // Editable Props
     const editableProps:any = {
       spellCheck: false,
       autoFocus: true,
@@ -410,7 +399,9 @@ const EditorIndex = () => {
 
     return (
         <EditorWrapper id="editor">
-            <TBallonToolbar ref={ref}>
+
+            {/*============ Ballon Toolbar ===========*/}
+            <TBallonToolbar ref={ballonToolberRef}>
                 <BallonToolbar 
                   linkSet={setLinkFunc}
                   link={link}
@@ -418,41 +409,47 @@ const EditorIndex = () => {
                   isOpenLinkFormSet={setIsOpenLinkFormFunc}
                   onLinkFormSubmit={onLinkFormSubmit}
                   lastSelection={editorSelection}
-                  width={ballonToolbarWidth}
                 />
             </TBallonToolbar>
+            {/*============ End Ballon Toolbar ===========*/}
+
+            {/*============ Slash (/) Toolbar ===========*/}
             {defaultToolbarTarget &&
               <SlashToolbarWrapper ref={slashToolbarRef}>
-                <SlashToolbar />
+                <SlashToolbar removeSlashToolbar={setDefaultToolbarTargetFunc} />
               </SlashToolbarWrapper>
             }
+            {/*============ End Slash (/) Toolbar ===========*/}
+
+            {/*============ Mention (@) Toolbar ===========*/}
             {target && CHARACTERS.length > 0 && (
-            <div className="mention_toolbar" ref={mentionToolbarRef}>
-              <div className="mention_toolbar_content">
-                {CHARACTERS &&
-                  CHARACTERS.map((item, ind) => {
-                    return (
-                      <MentionItem
-                        name={item}
-                        key={ind}
-                        className={ind === index ? "active" : ""}
-                        onMouseDown={mentionClick}
-                        index={ind}
-                      ></MentionItem>
-                    );
-                  })}
+              <div className="mention_toolbar" ref={mentionToolbarRef}>
+                <div className="mention_toolbar_content">
+                  {CHARACTERS &&
+                    CHARACTERS.map((item, ind) => {
+                      return (
+                        <MentionItem
+                          name={item}
+                          key={ind}
+                          className={ind === index ? "active" : ""}
+                          onMouseDown={mentionClick}
+                          index={ind}
+                        ></MentionItem>
+                      );
+                    })}
+                </div>
               </div>
-            </div>
-          )}
-            <Plate editor={editor} enabled={true} editableProps={editableProps} plugins={plugins} components={components}
-                options={options} onChange={onChangeValue} initialValue={initialValue}
-            >
-                
-            </Plate>
+            )}
+            {/*============ End Mention (@) Toolbar ===========*/}
+
+            {/*============ Plate Editor ===========*/}
+            <Plate editor={editor} enabled={true} editableProps={editableProps} plugins={plugins} components={components} options={options} onChange={onChangeValue} initialValue={initialValue} />
+            {/*============ End Plate Editor ===========*/}
+
             <br/>
             <br/>
             {value}
-        </EditorWrapper >
+        </EditorWrapper>
     );
 
 }

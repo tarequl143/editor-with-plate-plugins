@@ -1,4 +1,4 @@
-import { ELEMENT_BLOCKQUOTE, ELEMENT_CODE_BLOCK, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, ELEMENT_PARAGRAPH, getPlatePluginType, insertNodes, setNodes, TElement, ToolbarElement, useEventEditorId, useStoreEditorRef } from "@udecode/plate";
+import { ELEMENT_BLOCKQUOTE, ELEMENT_CODE_BLOCK, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, getPlatePluginType, useEventEditorId, useStoreEditorRef } from "@udecode/plate";
 import { FiCheckSquare} from "react-icons/fi";
 import { GoMention} from "react-icons/go";
 import { AiOutlineExclamationCircle, AiOutlineLine } from "react-icons/ai";
@@ -19,14 +19,14 @@ import { CUSTOM_ELEMENT_TODO_LIST } from "../plugins/TodoList/types";
 import ToolbarImageOption from "./toolbarButtons/ToolbarImageOption";
 import { CUSTOM_ELEMENT_SEPERATOR } from "../plugins/Seperator/types";
 import { CUSTOM_ELEMENT_MENTION_ITEM } from "../plugins/Mention/types";
-import { Editor } from "slate";
 
 interface IBallonToolbarProps {
   linkSet?: any
   isOpenLinkFormSet?:any
   link?: string
   isOpenLinkForm?: boolean
-  onLinkFormSubmit?: any
+  onLinkFormSubmit?: any,
+  removeSlashToolbar?:any
 }
 
 const SlashToolbar = (props:IBallonToolbarProps) => {
@@ -96,6 +96,7 @@ const SlashToolbar = (props:IBallonToolbarProps) => {
             onMouseDown={() => {
                 if(editor) {
                   editor.deleteBackward("character");
+                  props.removeSlashToolbar();
                   editor.insertText("@");
                 }
             }}
