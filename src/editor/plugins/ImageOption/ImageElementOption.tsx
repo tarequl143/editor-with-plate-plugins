@@ -3,8 +3,10 @@ import { ReactEditor, useFocused, useSelected, useSlate } from "slate-react";
 import { BiCheck, BiLinkAlt, BiUpload } from "react-icons/bi";
 // import { InsertImageUrl, insertImage } from "./../image-actions/ImageActions";
 import { v4 as uuidv4 } from "uuid";
-import { insertImage, useEventEditorId, useStoreEditorRef } from "@udecode/plate";
+import { getAbove, insertImage, useEventEditorId, useStoreEditorRef } from "@udecode/plate";
 import { Path, Transforms } from "slate";
+import styled from "styled-components";
+import { AiOutlineDelete } from "react-icons/ai";
 
 
 
@@ -40,12 +42,34 @@ function ImageElementOption(props: any) {
     if (imagePreviewUrl && editor) {
       const path = ReactEditor.findPath(editor, element);
       Transforms.removeNodes(editor, {at: path, hanging: true});
+      Transforms.select(editor, path);
       insertImage(editor, imagePreviewUrl);
+      Transforms.removeNodes(editor, {at: path, hanging: true});
       setImageBtn(false);
     }
     setUploadFile("");
     setImagePreviewUrl("");
   }, [imagePreviewUrl]);
+
+  const DeletePlaceholder = styled.div`
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 20px;
+    height: 24px;
+    border: 1px solid #d4d4d4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cccccc;
+    cursor: pointer;
+    border-radius: 3px;
+    &:hover {
+      background-color: #1668e3;
+      border-color: #1668e3;
+      color: #ffffff;
+    }
+  `
 
   return imageBtn ? (
     <div {...attributes} className="custom-element image-placeholder-element">
@@ -122,6 +146,13 @@ function ImageElementOption(props: any) {
             <h6>{props.children}</h6>
           </div>
         </div>
+        <DeletePlaceholder 
+        onMouseDown={(e) => {
+            if(!editor) return;
+            const path = ReactEditor.findPath(editor, element)  
+            Transforms.removeNodes(editor, {at: path, hanging: true});
+            Transforms.select(editor, path);
+          }}><AiOutlineDelete /></DeletePlaceholder>
       </div>
     </div>
   ) : null;

@@ -1,4 +1,4 @@
-import { TRenderElementProps } from "@udecode/plate";
+import { ELEMENT_TABLE, ELEMENT_TD, ELEMENT_TR, TRenderElementProps } from "@udecode/plate";
 import HintElement from "../Hint/HintElement";
 import { CUSTOM_ELEMENT_HINT } from "../Hint/types";
 import ImageElementOption from "../ImageOption/ImageElementOption";
@@ -19,9 +19,18 @@ import SeperatorElement from "../Seperator/SeperatorElement";
 import MentionElement from "../Mention/MentionElement";
 import { CUSTOM_ELEMENT_MENTION_ITEM } from "../Mention/types";
 import { DefaultElement } from "slate-react";
+import TdElement from "../Table/TdEement";
+import TableElement from "../Table/TableElement";
+import TrElement from "../Table/TrElement";
 
 export const RenderCustomElement = (editor: any) => (props: TRenderElementProps) => {
     const { element } = props;
+
+    const trProps = {...props, width: `${100 / element.children?.length}%`}
+
+    console.log(element);
+    console.log(props);
+    
     
     switch(element.type) {
         case CUSTOM_ELEMENT_IMAGE_OPTION:
@@ -42,6 +51,12 @@ export const RenderCustomElement = (editor: any) => (props: TRenderElementProps)
             return <SeperatorElement {...props} />;
         case CUSTOM_ELEMENT_MENTION_ITEM:
             return <MentionElement {...props} />;
+        case ELEMENT_TABLE:
+            return <TableElement {...props} />;
+        case ELEMENT_TR:
+            return <TrElement {...props} />;
+        case ELEMENT_TD:
+            return <TdElement {...props} />;
         default:
             return <DefaultElement {...props} />;
     }

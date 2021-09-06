@@ -6,9 +6,9 @@ export const withImageOption = (): WithOverride<ReactEditor & SPEditor> => (
   ) => {
     const { isVoid } = editor;
   
-    editor.isVoid = (element: any) => {
-        return element.type === "custom_elem_image_option" ? true : isVoid(element);
-    };
+    // editor.isVoid = (element: any) => {
+    //     return element.type === "custom_elem_image_option" ? true : isVoid(element);
+    // };
   
     return editor;
   };

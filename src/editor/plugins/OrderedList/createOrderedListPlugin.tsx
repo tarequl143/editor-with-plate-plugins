@@ -16,5 +16,5 @@ export const createOrderedListPlugin = (): PlatePlugin => ({
     pluginKeys: CUSTOM_ELEMENT_ORDERED_LIST,
     renderElement: getCustomElementRenderer(CUSTOM_ELEMENT_ORDERED_LIST),
     deserialize: getOrderedListDeserialize(),
-    onKeyDown: getToggleElementOnKeyDown(CUSTOM_ELEMENT_ORDERED_LIST),
+    onKeyDown: getToggleElementOnKeyDown(CUSTOM_ELEMENT_ORDERED_LIST)
 });

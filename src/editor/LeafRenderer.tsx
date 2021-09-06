@@ -34,10 +34,11 @@ export const LeafRendere = ({leaf, attributes, children, ...otherProps}: RenderL
       <>
         <DefaultLeaf leaf={leaf} attributes={attributes} children={children} {...otherProps} />
         <span
+          className="placeholder"
           style={{ opacity: 0.3, position: "absolute", top: "50%", transform: "translateY(-50%)" }}
           contentEditable={false}
         >
-          Type / to browse options and Type @ to mention someone
+          Type / to browse options
         </span>
       </>
     );

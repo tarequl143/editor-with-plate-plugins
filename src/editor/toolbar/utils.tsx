@@ -73,3 +73,5 @@ export const insertMention = (editor: any, character: string) => {
     Transforms.insertNodes(editor, mention);
     Transforms.move(editor);
   };
+
+  

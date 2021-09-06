@@ -6,7 +6,7 @@ import {
 
 import { getListItemDeserialize } from './getListItemDeserialize';
 import { CUSTOM_ELEMENT_LIST_ITEM } from './types';
-import { getToggleElementOnKeyDown } from '@udecode/plate';
+import { getToggleElementOnKeyDown, withLink } from '@udecode/plate';
 import { getCustomElementRenderer } from '../renderers/getCustomElementRenderer';
 
 /**
@@ -16,5 +16,5 @@ export const createListItemPlugin = (): PlatePlugin => ({
     pluginKeys: CUSTOM_ELEMENT_LIST_ITEM,
     renderElement: getCustomElementRenderer(CUSTOM_ELEMENT_LIST_ITEM),
     deserialize: getListItemDeserialize(),
-    onKeyDown: getToggleElementOnKeyDown(CUSTOM_ELEMENT_LIST_ITEM),
+    onKeyDown: getToggleElementOnKeyDown(CUSTOM_ELEMENT_LIST_ITEM)
 });

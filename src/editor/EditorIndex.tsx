@@ -27,7 +27,16 @@ import {
     withProps,
     StyledElement,
     createLinkPlugin,
-    SPEditor
+    SPEditor,
+    createTablePlugin,
+    getAbove,
+    getPlatePluginType,
+    ELEMENT_H1,
+    ELEMENT_DEFAULT,
+    insertNodes,
+    ELEMENT_CODE_BLOCK,
+    ELEMENT_BLOCKQUOTE,
+    TElement
 } from '@udecode/plate';
 import {initialValue} from "./InitialValue";
 import {
@@ -35,7 +44,7 @@ import {
     ELEMENT_EXCALIDRAW,
     ExcalidrawElement,
   } from '@udecode/plate-excalidraw';
-import { Editor, Range, Location, Path, Text, createEditor, BaseEditor } from "slate";
+import { Editor, Range, Location, Path, Text, createEditor, BaseEditor, BaseRange, BaseElement } from "slate";
 import "./editor.css";
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { EditorWrapper } from "./EditorIndex.style"
@@ -54,6 +63,13 @@ import { insertMention } from './toolbar/utils';
 import MentionItem from './plugins/Mention/MentionItem';
 import { useMemo } from 'react';
 import { LeafRendere } from './LeafRenderer';
+import { addRowBefore } from './toolbar/toolbarButtons/TableActions';
+import { CUSTOM_ELEMENT_ORDERED_LIST } from './plugins/OrderedList/types';
+import { CUSTOM_ELEMENT_BULLETED_LIST } from './plugins/BulletedList/types';
+import { CUSTOM_ELEMENT_LIST_ITEM } from './plugins/ListItem/types';
+import { CUSTOM_ELEMENT_TODO_LIST } from './plugins/TodoList/types';
+import { CUSTOM_ELEMENT_HINT } from './plugins/Hint/types';
+const LIST_TYPES = [CUSTOM_ELEMENT_ORDERED_LIST, CUSTOM_ELEMENT_BULLETED_LIST];
 
 
 // All Plguins
@@ -74,6 +90,7 @@ const plugins = [
     createKbdPlugin(),
     createNodeIdPlugin(),
     createLinkPlugin(),
+    createTablePlugin(),
    
     // marks
     createBoldPlugin(),
@@ -299,6 +316,56 @@ const EditorIndex = () => {
               event.preventDefault();
               setTarget(null);
               break;
+          }
+        } else {
+          switch (event.key) {
+            case "Enter":
+              
+              if(!editor) return;
+              const currentNode = getAbove(editor);
+              console.log(currentNode);
+              if(currentNode?.[0]?.children?.[0].text === "" && (currentNode?.[0]?.type === CUSTOM_ELEMENT_LIST_ITEM || currentNode?.[0]?.type === CUSTOM_ELEMENT_TODO_LIST )) {
+                Transforms.unwrapNodes(editor, {
+                  match: (n: any) => LIST_TYPES.includes(n.type),
+                  split: true,
+                });
+                Transforms.setNodes(editor, {type: ELEMENT_DEFAULT, childre: [{text:""}]} as any);
+                event.preventDefault();
+              }
+              if((currentNode?.[0]?.type === CUSTOM_ELEMENT_HINT || currentNode?.[0]?.type === ELEMENT_CODE_BLOCK || currentNode?.[0]?.type === ELEMENT_BLOCKQUOTE) && currentNode?.[0]?.children?.[currentNode?.[0]?.children?.length - 1].text.slice(-2) === `\n\n`) {
+                editor.deleteBackward("character");
+                editor.deleteBackward("character");
+                event.preventDefault();
+                const selectionPath = Editor.path(editor, editor.selection as Location);
+                console.log(selectionPath);
+                console.log(Path.next(selectionPath.slice(0, 1)));
+
+                insertNodes<TElement>(
+                  editor,
+                  { type: ELEMENT_DEFAULT, children: [{ text: '' }] },
+                  {
+                    at: Path.next(selectionPath.slice(0, 1)),
+                    select: true,
+                  }
+                );
+              }
+              console.log("Entered");
+            break;
+            case "Backspace":
+              
+              if(!editor) return;
+              const getCurrentNode = getAbove(editor);
+              console.log(getCurrentNode);          
+              if(getCurrentNode?.[0]?.children?.[0].text === "" && (getCurrentNode?.[0]?.type === CUSTOM_ELEMENT_LIST_ITEM || getCurrentNode?.[0]?.type === CUSTOM_ELEMENT_TODO_LIST )) {
+                Transforms.unwrapNodes(editor, {
+                  match: (n: any) => LIST_TYPES.includes(n.type),
+                  split: true,
+                });
+                Transforms.setNodes(editor, {type: ELEMENT_DEFAULT, childre: [{text:""}]} as any);
+                event.preventDefault();
+              }
+              
+            break;
           }
         }
       },

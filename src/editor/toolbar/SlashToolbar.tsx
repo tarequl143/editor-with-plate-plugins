@@ -1,7 +1,7 @@
-import { ELEMENT_BLOCKQUOTE, ELEMENT_CODE_BLOCK, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, getPlatePluginType, useEventEditorId, useStoreEditorRef } from "@udecode/plate";
+import { ELEMENT_BLOCKQUOTE, ELEMENT_CODE_BLOCK, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, getPlatePluginType, ToolbarTable, useEventEditorId, useStoreEditorRef } from "@udecode/plate";
 import { FiCheckSquare} from "react-icons/fi";
 import { GoMention} from "react-icons/go";
-import { AiOutlineExclamationCircle, AiOutlineLine } from "react-icons/ai";
+import { AiOutlineExclamationCircle, AiOutlineLine, AiOutlineTable } from "react-icons/ai";
 import { BiImage, BiCodeCurly } from "react-icons/bi";
 
 import {BsListOl, BsListUl, BsPencil} from "react-icons/bs";
@@ -19,6 +19,7 @@ import { CUSTOM_ELEMENT_TODO_LIST } from "../plugins/TodoList/types";
 import ToolbarImageOption from "./toolbarButtons/ToolbarImageOption";
 import { CUSTOM_ELEMENT_SEPERATOR } from "../plugins/Seperator/types";
 import { CUSTOM_ELEMENT_MENTION_ITEM } from "../plugins/Mention/types";
+import { insertTable } from "./toolbarButtons/TableActions";
 
 interface IBallonToolbarProps {
   linkSet?: any
@@ -101,6 +102,8 @@ const SlashToolbar = (props:IBallonToolbarProps) => {
                 }
             }}
           />
+          <ToolbarTable as="div" icon={<><span className="icon"><AiOutlineTable /></span> <span>Table</span></>} transform={insertTable} />
+          
           {/* <ToolbarCustomBtn
             type={getPlatePluginType(editor, CUSTOM_ELEMENT_SEPERATOR)}
             icon={<><span className="icon"><AiOutlineLine /></span> <span>Seperator</span></>}

@@ -14,7 +14,11 @@ import {
     ResetBlockTypePluginOptions,
     SoftBreakPluginOptions,
   } from '@udecode/plate';
+import { CUSTOM_ELEMENT_BULLETED_LIST } from '../plugins/BulletedList/types';
 import { CUSTOM_ELEMENT_HINT } from '../plugins/Hint/types';
+import { CUSTOM_ELEMENT_LIST_ITEM } from '../plugins/ListItem/types';
+import { CUSTOM_ELEMENT_ORDERED_LIST } from '../plugins/OrderedList/types';
+import { CUSTOM_ELEMENT_TODO_LIST } from '../plugins/TodoList/types';
 
   
   export const options = createPlateOptions();
@@ -30,7 +34,7 @@ import { CUSTOM_ELEMENT_HINT } from '../plugins/Hint/types';
   };
   
   const resetBlockTypesCommonRule = {
-    types: [ELEMENT_BLOCKQUOTE, ELEMENT_TODO_LI],
+    types: [],
     defaultType: ELEMENT_PARAGRAPH,
   };
   

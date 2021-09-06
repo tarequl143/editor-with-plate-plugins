@@ -16,5 +16,5 @@ export const createBulletedListPlugin = (): PlatePlugin => ({
     pluginKeys: CUSTOM_ELEMENT_BULLETED_LIST,
     renderElement: getCustomElementRenderer(CUSTOM_ELEMENT_BULLETED_LIST),
     deserialize: getBulletedListDeserialize(),
-    onKeyDown: getToggleElementOnKeyDown(CUSTOM_ELEMENT_BULLETED_LIST),
+    onKeyDown: getToggleElementOnKeyDown(CUSTOM_ELEMENT_BULLETED_LIST)
 });
